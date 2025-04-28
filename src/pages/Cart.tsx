@@ -14,12 +14,46 @@ import {
   Box,
 } from "@mantine/core";
 import IconTrash from "../assets/icons/IconTrash";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import { Footer } from "../components/Footer";
+import api from "../api";
+import { IUser } from "../interfaces/IUser";
+import { ICart } from "../interfaces/Cart";
 
 export default function Cart() {
+  const user: IUser = localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user") as string)
+    : null;
+  const [carts, setCarts] = useState<ICart[]>([]);
   const [quantity, setQuantity] = useState(10);
+
+  const getCarts = async () => {
+    try {
+      const { data } = await api.get(`carts/${user._id}`);
+      if (data) {
+        setCarts(data);
+      } else {
+        setCarts([]);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getCarts();
+  }, []);
+
+  const handleDeleteCart = async (cartId: string) => {
+    try {
+    const {data} =  await api.delete(`carts/${cartId}`);
+    if(data){
+      getCarts()
+    }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <>
       <Navbar />
@@ -36,148 +70,87 @@ export default function Cart() {
               }}
             >
               <Card withBorder radius="md" p="md" mx="auto">
-                <Title order={4}>Shopping Cart (2 items)</Title>
-                <Card h={200}>
-                  <Group align="flex-start" gap="md">
-                    <Image
-                      src="https://via.placeholder.com/100" // replace with marble image URL
-                      alt="Carrara White Marble"
-                      radius="md"
-                      w={100}
-                      h={100}
-                      fit="cover"
-                    />
-
-                    <Stack gap={4} flex={1}>
-                      <Text fw={600} size="lg">
-                        Carrara White Marble
-                      </Text>
-                      <Text size="sm" c="dimmed">
-                        Size: 24×24
-                      </Text>
-                      <Text size="sm" c="dimmed">
-                        Thickness: 15mm
-                      </Text>
-                      <Text size="sm" c="dimmed">
-                        Finish: Polished
-                      </Text>
-
-                      <Group mt="sm" gap="xs">
-                        <Button
-                          variant="default"
-                          size="compact-sm"
-                          onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                        >
-                          -
-                        </Button>
-                        <NumberInput
-                          value={quantity}
-                          onChange={(val) => setQuantity(Number(val))}
-                          min={1}
-                          hideControls
-                          w={60}
-                          styles={{ input: { textAlign: "center" } }}
+                <Title order={4}>Shopping Cart ({carts.length}items)</Title>
+                {carts.map((cart, ind) => (
+                  <>
+                    <Card h={200}>
+                      <Group align="flex-start" gap="md">
+                        <Image
+                          src={cart.product.image.url} // replace with marble image URL
+                          alt="Carrara White Marble"
+                          radius="md"
+                          w={100}
+                          h={100}
+                          fit="cover"
                         />
-                        <Button
-                          variant="default"
-                          size="compact-sm"
-                          onClick={() => setQuantity((q) => q + 1)}
-                        >
-                          +
-                        </Button>
+
+                        <Stack gap={4} flex={1}>
+                          <Text fw={600} size="lg">
+                            {cart.product.name}
+                          </Text>
+                          <Text size="sm" c="dimmed">
+                            Size: {cart.product.dimensions}
+                          </Text>
+                          <Text size="sm" c="dimmed">
+                            Thickness: {cart.product.thickness}
+                          </Text>
+                          <Text size="sm" c="dimmed">
+                            Finish: {cart.product.finish}
+                          </Text>
+                          <Text size="sm" c="dimmed">
+                            quantity: {cart.quantity}
+                          </Text>
+
+                          {/* <Group mt="sm" gap="xs">
+                            <Button
+                              variant="default"
+                              size="compact-sm"
+                              onClick={() =>
+                                setQuantity((q) => Math.max(1, q - 1))
+                              }
+                            >
+                              -
+                            </Button>
+                            <NumberInput
+                              value={cart.quantity}
+                              onChange={(val) => setQuantity(Number(val))}
+                              min={1}
+                              hideControls
+                              w={60}
+                              styles={{ input: { textAlign: "center" } }}
+                            />
+                            <Button
+                              variant="default"
+                              size="compact-sm"
+                              onClick={() => setQuantity((q) => q + 1)}
+                            >
+                              +
+                            </Button>
+                          </Group> */}
+                        </Stack>
+
+                        <Stack align="flex-end" gap="xs">
+                          <Text fw={600} size="lg">
+                            ${(cart.product.price).toFixed(2)}
+                          </Text>
+                          <Text size="sm" c="dimmed">
+                            $129.99 per sq ft
+                          </Text>
+                          <Button
+                            variant="subtle"
+                            color="red"
+                            leftSection={<IconTrash size={16} />}
+                            size="xs"
+                            mt="auto"
+                            onClick={()=>handleDeleteCart(cart._id)}
+                          >
+                            Remove
+                          </Button>
+                        </Stack>
                       </Group>
-                    </Stack>
-
-                    <Stack align="flex-end" gap="xs">
-                      <Text fw={600} size="lg">
-                        ${(1299.9).toFixed(2)}
-                      </Text>
-                      <Text size="sm" c="dimmed">
-                        $129.99 per sq ft
-                      </Text>
-                      <Button
-                        variant="subtle"
-                        color="red"
-                        leftSection={<IconTrash size={16} />}
-                        size="xs"
-                        mt="auto"
-                      >
-                        Remove
-                      </Button>
-                    </Stack>
-                  </Group>
-                </Card>
-                <Card h={200}>
-                  <Group align="flex-start" gap="md">
-                    <Image
-                      src="https://via.placeholder.com/100" // replace with marble image URL
-                      alt="Carrara White Marble"
-                      radius="md"
-                      w={100}
-                      h={100}
-                      fit="cover"
-                    />
-
-                    <Stack gap={4} flex={1}>
-                      <Text fw={600} size="lg">
-                        Carrara White Marble
-                      </Text>
-                      <Text size="sm" c="dimmed">
-                        Size: 24×24
-                      </Text>
-                      <Text size="sm" c="dimmed">
-                        Thickness: 15mm
-                      </Text>
-                      <Text size="sm" c="dimmed">
-                        Finish: Polished
-                      </Text>
-
-                      <Group mt="sm" gap="xs">
-                        <Button
-                          variant="default"
-                          size="compact-sm"
-                          onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                        >
-                          -
-                        </Button>
-                        <NumberInput
-                          value={quantity}
-                          onChange={(val) => setQuantity(Number(val))}
-                          min={1}
-                          hideControls
-                          w={60}
-                          styles={{ input: { textAlign: "center" } }}
-                        />
-                        <Button
-                          variant="default"
-                          size="compact-sm"
-                          onClick={() => setQuantity((q) => q + 1)}
-                        >
-                          +
-                        </Button>
-                      </Group>
-                    </Stack>
-
-                    <Stack align="flex-end" gap="xs">
-                      <Text fw={600} size="lg">
-                        ${(1299.9).toFixed(2)}
-                      </Text>
-                      <Text size="sm" c="dimmed">
-                        $129.99 per sq ft
-                      </Text>
-                      <Button
-                        variant="subtle"
-                        color="red"
-                        leftSection={<IconTrash size={16} />}
-                        size="xs"
-                        mt="auto"
-                      >
-                        Remove
-                      </Button>
-                    </Stack>
-                  </Group>
-                </Card>
-                
+                    </Card>
+                  </>
+                ))}
               </Card>
             </Box>
           </Grid.Col>
@@ -241,7 +214,7 @@ export default function Cart() {
           </Grid.Col>
         </Grid>
       </Container>
-      <Box >
+      <Box>
         <Footer />
       </Box>
     </>

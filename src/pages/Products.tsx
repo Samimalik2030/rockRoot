@@ -26,7 +26,7 @@ export default function Products() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedOrigin, setSelectedOrigin] = useState<string[]>([]);
   const [selectedFinish, setSelectedFinish] = useState<string[]>([]);
-  const [priceRange, setPriceRange] = useState<number>(30);
+  const [priceRange, setPriceRange] = useState<number | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [fetching, setFetching] = useState<boolean>(false);
 

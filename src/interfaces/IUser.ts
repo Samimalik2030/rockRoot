@@ -1,15 +1,20 @@
+
+export enum Role {
+  ADMIN = 'Admin',
+  CUSTOMER = 'Customer'
+}
+
+
 export interface IUser {
-    id: number;
-    email: string;
-    password: string;
-    name: string;
-    profileImage: FileDto | null;
-    role: string;
-    createdAt: Date;
-    updatedAt: Date;
-  
-  }
-  
+  _id: string;
+  fullName: string;
+  email: string;
+  password: string;
+  role: Role;
+  createdAt: Date;
+  updatedAt: Date;
+  __v: number;
+}
   export interface FileDto{
     fileId:string
     url:string

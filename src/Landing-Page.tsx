@@ -10,6 +10,11 @@ import {
   BackgroundImage,
   Center,
   Container,
+  ActionIcon,
+  Badge,
+  Group,
+  rem,
+  Image,
 } from "@mantine/core";
 import Collections from "./pages/Collections";
 import WhyChooseUs from "./components/WhyChooseUs";
@@ -18,81 +23,43 @@ import { Footer } from "./components/Footer";
 import IconShield from "./assets/icons/IconShield";
 import IconTruck from "./assets/icons/IconTruck";
 import IconClock from "./assets/icons/IconClock";
-import { ProductCard } from "./components/ProductCard";
-import { useMediaQuery } from "@mantine/hooks";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import Navbar from "./components/Navbar";
 import { useNavigate } from "react-router-dom";
+import api from "./api";
+import { useCallback, useEffect, useState } from "react";
+import { Product } from "./interfaces/Product";
+import { motion } from "framer-motion";
+import IconHeart from "./assets/icons/IconHeart";
+import IconStar from "./assets/icons/IconStar";
+import handleAddToCart from "./constants/handleAddToCart";
+import { IUser, Role } from "./interfaces/IUser";
+
+const MotionCard = motion(Card);
 
 function LandingPage() {
+  const user: IUser = localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user") as string)
+    : null;
+  const [loading, setLoading] = useState(false);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const isMobile = useMediaQuery("(max-width: 56.25em)");
   const navigate = useNavigate();
-  const products = [
-    {
-      id: "hdjsfjhsadf",
-      name: "Carrara White Marble",
-      price: 25,
-      description: "Elegant white marble with grey veins.",
-      dimensions: "60x30 inches",
-      thickness: "2 cm",
-      finish: "Polished",
-      category: "White Marble",
-      image:
-        "https://plus.unsplash.com/premium_photo-1708078449934-4de2318cdc84?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8bWFyYmxlJTIwaXRtZXN8ZW58MHx8MHx8fDA%3D",
-      inStock: true,
-      color: "White",
-      origin: "Italy",
-      tags: ["luxury", "floor", "classic"],
-    },
-    {
-      id: "hdjsfjhsadf",
 
-      name: "Emperador Dark Marble",
-      price: 30,
-      description: "Deep brown marble with fine veins.",
-      dimensions: "48x24 inches",
-      thickness: "1.8 cm",
-      finish: "Honed",
-      category: "Brown Marble",
-      image:
-        "https://plus.unsplash.com/premium_photo-1708073341819-4edf7d77e7e4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8bWFyYmxlJTIwaXRtZXN8ZW58MHx8MHx8fDA%3D",
-      inStock: true,
-      color: "Brown",
-      origin: "Spain",
-      tags: ["warm", "premium", "interior"],
-    },
-    {
-      id: "hdjsfjhsadf",
-      name: "Black Galaxy Granite",
-      price: 28,
-      description: "Black granite with golden specks.",
-      dimensions: "72x36 inches",
-      thickness: "2.5 cm",
-      finish: "Polished",
-      category: "Black Granite",
-      image:
-        "https://plus.unsplash.com/premium_photo-1726837532891-8201243681a9?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8bWFyYmxlJTIwaXRtZXN8ZW58MHx8MHx8fDA%3D",
-      inStock: false,
-      color: "Black",
-      origin: "India",
-      tags: ["modern", "flooring", "luxury"],
-    },
-    {
-      id: "hdjsfjhsadf",
-      name: "Black Galaxy Granite",
-      price: 28,
-      description: "Black granite with golden specks.",
-      dimensions: "72x36 inches",
-      thickness: "2.5 cm",
-      finish: "Polished",
-      category: "Black Granite",
-      image:
-        "https://images.unsplash.com/photo-1649331953896-31342f33ea1a?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8bWFyYmxlJTIwaXRtZXN8ZW58MHx8MHx8fDA%3D",
-      inStock: false,
-      color: "Black",
-      origin: "India",
-      tags: ["modern", "flooring", "luxury"],
-    },
-  ];
+  const [products, setProducts] = useState<Product[]>([]);
+
+  const fetchProducts = useCallback(async () => {
+    try {
+      const { data } = await api.get(`/products?limit=4`);
+      setProducts(data || []);
+    } catch (error) {
+      console.error("Error fetching products", error);
+    } finally {
+    }
+  }, []);
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   return (
     <>
@@ -125,7 +92,7 @@ function LandingPage() {
                         w={"180px"}
                         h={42}
                         bg={"#f79707"}
-                        onClick={() => navigate('/products')}
+                        onClick={() => navigate("/products")}
                       >
                         View Products
                       </Button>
@@ -305,17 +272,115 @@ function LandingPage() {
             </Stack>
           </Center>
           <SimpleGrid cols={4}>
-            {products.map((product) => (
-              <ProductCard
-                description={product.description}
-                image={product.image}
-                name={product.name}
-                origin={product.origin}
-                price={product.price}
-                rating={4}
-                isBestseller
-                key={product.id}
-              />
+            {products.map((product, index) => (
+              <MotionCard
+                key={index}
+                withBorder
+                radius="lg"
+                shadow="sm"
+                p="lg"
+                className="relative"
+                initial={{ scale: 1 }}
+                animate={{ scale: hoveredIndex === index ? 1.02 : 1 }}
+                onHoverStart={() => setHoveredIndex(index)}
+                onHoverEnd={() => setHoveredIndex(null)}
+              >
+                {/* Top - Bestseller badge and heart */}
+                <Group justify="space-between" mb="xs">
+                  <Badge color="orange" variant="filled" radius="sm">
+                    BESTSELLER
+                  </Badge>
+                  <Group>
+                    <ActionIcon variant="light" radius="xl" color="gray">
+                      <IconHeart size={14} />
+                    </ActionIcon>
+                  </Group>
+                </Group>
+
+                {/* Product Image */}
+                <div
+                  style={{
+                    height: rem(250),
+                    borderRadius: rem(12),
+                    backgroundColor: "#f1f5f9",
+                    marginBottom: rem(16),
+                    position: "relative",
+                    overflow: "hidden", // Important to clip the button inside the div
+                  }}
+                >
+                  <Image
+                    src={product.image.url}
+                    alt="Image"
+                    fit="cover"
+                    radius="md"
+                    height={250}
+                    fallbackSrc="https://via.placeholder.com/260x150?text=Marble"
+                  />
+
+                  {/* Add to Cart Button on Hover */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={
+                      hoveredIndex === index
+                        ? { opacity: 1, y: 0 }
+                        : { opacity: 0, y: 50 }
+                    }
+                    transition={{ duration: 0.3 }}
+                    style={{
+                      position: "absolute",
+                      top: "80%",
+                      left: "10%",
+                      transform: "translate(-50%, -50%)",
+                      width: "80%",
+                    }}
+                  >
+                    <Button
+                      color="orange"
+                      radius="md"
+                      fullWidth
+                      onClick={() =>
+                        user && user.role === Role.CUSTOMER
+                          ? handleAddToCart(product._id, user._id, setLoading)
+                          : navigate("/sign-in")
+                      }
+                      loading={loading}
+                    >
+                      Add to Cart
+                    </Button>
+                  </motion.div>
+                </div>
+
+                {/* Country and Rating */}
+                <Group gap="xs" mb="xs">
+                  <Badge color="gray" variant="light" radius="xl">
+                    {product.origin || "Unknown"}
+                  </Badge>
+                  <Group gap={4}>
+                    <IconStar size={16} color="#fbbf24" fill="#fbbf24" />
+                    <Text size="sm" fw={500}>
+                      4.3
+                    </Text>
+                  </Group>
+                </Group>
+
+                {/* Title & Description */}
+                <Stack gap={2}>
+                  <Text fw={600}>{product.name}</Text>
+                  <Text size="sm" c="gray">
+                    {product.description}
+                  </Text>
+                </Stack>
+
+                {/* Price & Details */}
+                <Group justify="space-between" mt="md" align="center">
+                  <Text fw={600} size="lg">
+                    ${product.price.toFixed(2)}{" "}
+                    <Text component="span" size="sm" color="dimmed">
+                      per sq ft
+                    </Text>
+                  </Text>
+                </Group>
+              </MotionCard>
             ))}
           </SimpleGrid>
 

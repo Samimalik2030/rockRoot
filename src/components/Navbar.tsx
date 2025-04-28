@@ -2,6 +2,7 @@ import {
   ActionIcon,
   Anchor,
   Burger,
+  Button,
   Card,
   Container,
   Drawer,
@@ -73,6 +74,15 @@ export default function Navbar() {
             </Group>
 
             <Group gap="md">
+              {user && user.role === "Admin" && (
+                <Button
+                size="sm"
+                  variant="outline"
+                  onClick={() => navigate("/dashboard/analytics")}
+                >
+                  Dashboard
+                </Button>
+              )}
               {user && user.role === "Customer" && (
                 <ActionIcon
                   variant="transparent"
