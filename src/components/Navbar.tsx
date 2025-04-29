@@ -86,7 +86,7 @@ export default function Navbar() {
               {user && user.role === "Customer" && (
                 <ActionIcon
                   variant="transparent"
-                  onClick={() => navigate("/cart")}
+                  onClick={() => navigate("/wishlist")}
                 >
                   <IconHeart color="black" />
                 </ActionIcon>

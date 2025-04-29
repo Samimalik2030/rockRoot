@@ -20,13 +20,15 @@ import { Footer } from "../components/Footer";
 import api from "../api";
 import { IUser } from "../interfaces/IUser";
 import { ICart } from "../interfaces/Cart";
+import { OrderSummary } from "../interfaces/OrderSummary";
+import { modals } from "@mantine/modals";
 
 export default function Cart() {
   const user: IUser = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user") as string)
     : null;
   const [carts, setCarts] = useState<ICart[]>([]);
-  const [quantity, setQuantity] = useState(10);
+  const [summary, setSummary] = useState<OrderSummary | null>(null);
 
   const getCarts = async () => {
     try {
@@ -40,16 +42,32 @@ export default function Cart() {
       console.log(error);
     }
   };
+
+  const getSummary = async () => {
+    try {
+      const { data } = await api.get(`carts/summary/${user._id}`); // <-- added slash /
+      if (data) {
+        setSummary(data);
+      } else {
+        setSummary(null);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     getCarts();
+    getSummary();
   }, []);
 
   const handleDeleteCart = async (cartId: string) => {
     try {
-    const {data} =  await api.delete(`carts/${cartId}`);
-    if(data){
-      getCarts()
-    }
+      const { data } = await api.delete(`carts/${cartId}`);
+      if (data) {
+        getCarts();
+        getSummary();
+      }
     } catch (error) {
       console.log(error);
     }
@@ -131,7 +149,7 @@ export default function Cart() {
 
                         <Stack align="flex-end" gap="xs">
                           <Text fw={600} size="lg">
-                            ${(cart.product.price).toFixed(2)}
+                            ${cart.product.price.toFixed(2)}
                           </Text>
                           <Text size="sm" c="dimmed">
                             $129.99 per sq ft
@@ -142,7 +160,7 @@ export default function Cart() {
                             leftSection={<IconTrash size={16} />}
                             size="xs"
                             mt="auto"
-                            onClick={()=>handleDeleteCart(cart._id)}
+                            onClick={() => handleDeleteCart(cart._id)}
                           >
                             Remove
                           </Button>
@@ -172,7 +190,7 @@ export default function Cart() {
                   Subtotal
                 </Text>
                 <Text fz={16} fw={500}>
-                  $2649.75
+                  {summary?.subtotal}
                 </Text>
               </Group>
 
@@ -181,7 +199,7 @@ export default function Cart() {
                   Shipping
                 </Text>
                 <Text fz={16} fw={500}>
-                  $4.99
+                  {summary?.shipping}
                 </Text>
               </Group>
 
@@ -190,7 +208,7 @@ export default function Cart() {
                   Tax
                 </Text>
                 <Text fz={16} fw={500}>
-                  $211.98
+                  {summary?.tax}
                 </Text>
               </Group>
 
@@ -201,12 +219,33 @@ export default function Cart() {
                   Total
                 </Text>
                 <Text fw={700} fz={18}>
-                  $2866.72
+                  {summary?.total}
                 </Text>
               </Group>
 
               <Stack>
-                <Button fullWidth color="orange" radius={6} c={"black"} h={42}>
+                <Button
+                  fullWidth
+                  color="orange"
+                  radius={6}
+                  c={"black"}
+                  h={42}
+                  onClick={() => {
+                    modals.open({
+                      title: "Work In Progress",
+                      children: (
+                        <Stack align="center" gap="md">
+                          <Text size="lg" fw={500}>
+                            This feature is currently under development.
+                          </Text>
+                          <Text size="sm" c="dimmed">
+                            Please check back soon!
+                          </Text>
+                        </Stack>
+                      ),
+                    });
+                  }}
+                >
                   Proceed to Checkout →
                 </Button>
               </Stack>

@@ -17,6 +17,7 @@ import {
 } from "@mantine/core";
 import Navbar from "../components/Navbar";
 import { Footer } from "../components/Footer";
+import { modals } from "@mantine/modals";
 
 function ContactUs() {
   return (
@@ -103,7 +104,21 @@ function ContactUs() {
                   mb={12}
                 />
 
-                <Button fullWidth color="#ff9c07" radius="5" h={42}>
+                <Button fullWidth color="#ff9c07" radius="5" h={42} onClick={()=>{
+                      modals.open({
+                        title: "Work In Progress",
+                        children: (
+                          <Stack align="center" gap="md">
+                            <Text size="lg" fw={500}>
+                              This feature is currently under development.
+                            </Text>
+                            <Text size="sm" c="dimmed">
+                              Please check back soon!
+                            </Text>
+                          </Stack>
+                        ),
+                      });
+                }}>
                   Send
                 </Button>
               </Card>

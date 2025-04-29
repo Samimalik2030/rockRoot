@@ -19,26 +19,41 @@ import { modals } from "@mantine/modals";
 import Navbar from "../components/Navbar";
 import WhyChooseUs from "../components/WhyChooseUs";
 import { Footer } from "../components/Footer";
+import { useEffect } from "react";
 
 function MyOrders() {
-   const navigate = useNavigate()
-   const openLogoutModal = () => {
-     modals.openConfirmModal({
-       title: "Confirm Logout",
-       centered: true,
-       children: <p>Are you sure you want to logout?</p>,
-       labels: { confirm: "Logout", cancel: "Cancel" },
-       confirmProps: { color: "red" },
-       onConfirm: () => {
-         localStorage.removeItem("token");
-         localStorage.removeItem("user");
-         navigate("/sign-in");
-         window.location.reload();
-       },
-     });
-   };
- 
+  const navigate = useNavigate();
+  const openLogoutModal = () => {
+    modals.openConfirmModal({
+      title: "Confirm Logout",
+      centered: true,
+      children: <p>Are you sure you want to logout?</p>,
+      labels: { confirm: "Logout", cancel: "Cancel" },
+      confirmProps: { color: "red" },
+      onConfirm: () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        navigate("/sign-in");
+        window.location.reload();
+      },
+    });
+  };
 
+  useEffect(() => {
+    modals.open({
+      title: "Work In Progress",
+      children: (
+        <Stack align="center" gap="md">
+          <Text size="lg" fw={500}>
+            This feature is currently under development.
+          </Text>
+          <Text size="sm" c="dimmed">
+            Please check back soon!
+          </Text>
+        </Stack>
+      ),
+    });
+  }, []);
 
   return (
     <>
@@ -206,7 +221,6 @@ function MyOrders() {
       <Footer />
     </>
   );
-
-};
+}
 
 export default MyOrders;

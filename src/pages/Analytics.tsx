@@ -20,6 +20,8 @@ import CalendarIcon from "../assets/calendar-check.svg";
 import CalculatorIcon from "../assets/calculator.svg";
 import SettingsIcon from "../assets/settings-check.svg";
 import RevenueChart from "../components/RevenueChart";
+import { modals } from "@mantine/modals";
+import { useEffect } from "react";
 
 const Analytics = () => {
   const isMobile = useMediaQuery("(max-width: 56.25em)");
@@ -78,7 +80,21 @@ const Analytics = () => {
     },
     // more items...
   ];
-
+  useEffect(() => {
+    modals.open({
+      title: "Work In Progress",
+      children: (
+        <Stack align="center" gap="md">
+          <Text size="lg" fw={500}>
+            This feature is currently under development.
+          </Text>
+          <Text size="sm" c="dimmed">
+            Please check back soon!
+          </Text>
+        </Stack>
+      ),
+    });
+  }, []);
   const rows = data.map((item, index) => (
     <Table.Tr key={index}>
       <Table.Td>{index + 1}</Table.Td>

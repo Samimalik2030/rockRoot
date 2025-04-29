@@ -1,5 +1,8 @@
 import {
+  ActionIcon,
+  Badge,
   Box,
+  Button,
   Card,
   Checkbox,
   CheckIcon,
@@ -8,12 +11,14 @@ import {
   Flex,
   Grid,
   Group,
+  rem,
   SimpleGrid,
   Slider,
   Stack,
   Text,
   ThemeIcon,
   Title,
+  Image,
 } from "@mantine/core";
 import { ProductCard } from "../components/ProductCard";
 import Navbar from "../components/Navbar";
@@ -21,15 +26,29 @@ import { Footer } from "../components/Footer";
 import { useState, useCallback, useEffect } from "react";
 import api from "../api";
 import { Product } from "../interfaces/Product";
+import { motion } from "framer-motion";
+import IconHeart from "../assets/icons/IconHeart";
+import IconStar from "../assets/icons/IconStar";
+import handleAddToCart from "../constants/handleAddToCart";
+import handleAddToFavorites from "../constants/handleAddToFavourites";
+import { IUser, Role } from "../interfaces/IUser";
+import { MotionCard } from "./Collections";
+import { useNavigate } from "react-router-dom";
 
 export default function Products() {
+  const user: IUser = localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user") as string)
+    : null;
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedOrigin, setSelectedOrigin] = useState<string[]>([]);
   const [selectedFinish, setSelectedFinish] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<number | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [fetching, setFetching] = useState<boolean>(false);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [loading, setLoading] = useState(false);
 
+  const navigate = useNavigate()
   const handleCategoryChange = (category: string) => {
     setSelectedCategories((prev) =>
       prev.includes(category)
@@ -101,11 +120,7 @@ export default function Products() {
   return (
     <>
       <Navbar />
-      <Card
-        shadow="sm"
-        h={300}
-        bg={"#1f2937"}
-      >
+      <Card shadow="sm" h={300} bg={"#1f2937"}>
         <Stack mt={30} gap={25}>
           <Title fw={700} fz={48} ta={"center"} c={"white"}>
             About Rajput Marble's & Granite
@@ -312,18 +327,131 @@ export default function Products() {
               </Text>
             ) : (
               <Grid>
-                {products.map((product) => (
+                {products.map((product,index) => (
                   <Grid.Col span={4} key={product._id}>
-                    <ProductCard
-                      description={product.description}
-                      image={product.image.url}
-                      name={product.name}
-                      origin={product.origin}
-                      price={product.price}
-                      rating={4}
-                      isBestseller
-                      isUpdate={false}
-                    />
+                    <MotionCard
+                      key={index}
+                      withBorder
+                      radius="lg"
+                      shadow="sm"
+                      p="lg"
+                      className="relative"
+                      initial={{ scale: 1 }}
+                      animate={{ scale: hoveredIndex === index ? 1.02 : 1 }}
+                      onHoverStart={() => setHoveredIndex(index)}
+                      onHoverEnd={() => setHoveredIndex(null)}
+                    >
+                      {/* Top - Bestseller badge and heart */}
+                      <Group justify="space-between" mb="xs">
+                        <Badge color="orange" variant="filled" radius="sm">
+                          BESTSELLER
+                        </Badge>
+                        <Group>
+                          <ActionIcon
+                            variant="light"
+                            radius="xl"
+                            color="gray"
+                            onClick={() =>
+                              handleAddToFavorites(
+                                product._id,
+                                user._id,
+                                setFetching
+                              )
+                            }
+                          >
+                            <IconHeart size={14} />
+                          </ActionIcon>
+                        </Group>
+                      </Group>
+
+                      {/* Product Image */}
+                      <div
+                        style={{
+                          height: rem(250),
+                          borderRadius: rem(12),
+                          backgroundColor: "#f1f5f9",
+                          marginBottom: rem(16),
+                          position: "relative",
+                          overflow: "hidden", // Important to clip the button inside the div
+                        }}
+                      >
+                        <Image
+                          src={product.image.url}
+                          alt="Image"
+                          fit="cover"
+                          radius="md"
+                          height={250}
+                          fallbackSrc="https://via.placeholder.com/260x150?text=Marble"
+                        />
+
+                        {/* Add to Cart Button on Hover */}
+                        <motion.div
+                          initial={{ opacity: 0, y: 50 }}
+                          animate={
+                            hoveredIndex === index
+                              ? { opacity: 1, y: 0 }
+                              : { opacity: 0, y: 50 }
+                          }
+                          transition={{ duration: 0.3 }}
+                          style={{
+                            position: "absolute",
+                            top: "80%",
+                            left: "10%",
+                            transform: "translate(-50%, -50%)",
+                            width: "80%",
+                          }}
+                        >
+                          <Button
+                            color="orange"
+                            radius="md"
+                            fullWidth
+                            onClick={() =>
+                              user && user.role === Role.CUSTOMER
+                                ? handleAddToCart(
+                                    product._id,
+                                    user._id,
+                                    setLoading
+                                  )
+                                : navigate("/sign-in")
+                            }
+                            loading={loading}
+                          >
+                            Add to Cart
+                          </Button>
+                        </motion.div>
+                      </div>
+
+                      {/* Country and Rating */}
+                      <Group gap="xs" mb="xs">
+                        <Badge color="gray" variant="light" radius="xl">
+                          {product.origin || "Unknown"}
+                        </Badge>
+                        <Group gap={4}>
+                          <IconStar size={16} color="#fbbf24" fill="#fbbf24" />
+                          <Text size="sm" fw={500}>
+                            4.3
+                          </Text>
+                        </Group>
+                      </Group>
+
+                      {/* Title & Description */}
+                      <Stack gap={2}>
+                        <Text fw={600}>{product.name}</Text>
+                        <Text size="sm" c="gray">
+                          {product.description}
+                        </Text>
+                      </Stack>
+
+                      {/* Price & Details */}
+                      <Group justify="space-between" mt="md" align="center">
+                        <Text fw={600} size="lg">
+                          ${product.price.toFixed(2)}{" "}
+                          <Text component="span" size="sm" color="dimmed">
+                            per sq ft
+                          </Text>
+                        </Text>
+                      </Group>
+                    </MotionCard>
                   </Grid.Col>
                 ))}
               </Grid>

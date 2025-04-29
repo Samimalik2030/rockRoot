@@ -34,6 +34,7 @@ import IconHeart from "./assets/icons/IconHeart";
 import IconStar from "./assets/icons/IconStar";
 import handleAddToCart from "./constants/handleAddToCart";
 import { IUser, Role } from "./interfaces/IUser";
+import handleAddToFavorites from "./constants/handleAddToFavourites";
 
 const MotionCard = motion(Card);
 
@@ -42,6 +43,8 @@ function LandingPage() {
     ? JSON.parse(localStorage.getItem("user") as string)
     : null;
   const [loading, setLoading] = useState(false);
+  const [loadingFavourite, setLoadingFavourite] = useState(false);
+
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const isMobile = useMediaQuery("(max-width: 56.25em)");
   const navigate = useNavigate();
@@ -60,6 +63,9 @@ function LandingPage() {
   useEffect(() => {
     fetchProducts();
   }, []);
+
+   
+
 
   return (
     <>
@@ -291,7 +297,7 @@ function LandingPage() {
                     BESTSELLER
                   </Badge>
                   <Group>
-                    <ActionIcon variant="light" radius="xl" color="gray">
+                    <ActionIcon variant="light" radius="xl" color="gray" onClick={()=>handleAddToFavorites(product._id,user._id,setLoadingFavourite)}>
                       <IconHeart size={14} />
                     </ActionIcon>
                   </Group>

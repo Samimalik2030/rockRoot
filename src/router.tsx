@@ -19,6 +19,7 @@ import MyOrders from "./pages/MyOrders";
 import ContactUs from "./pages/ContactUs";
 import RoomIdeas from "./components/RoomIdeas";
 import Cart from "./pages/Cart";
+import MyWishlist from "./pages/MyWishlist";
 
 
 export const router = createBrowserRouter([
@@ -73,6 +74,10 @@ export const router = createBrowserRouter([
   {
     path: "/shopping-cart",
     element: <Cart/>,
+  },
+  {
+    path: "/wishlist",
+    element: <MyWishlist/>,
   },
   {
     path: "/account",
