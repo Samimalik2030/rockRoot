@@ -28,6 +28,7 @@ import PayfastRedirectForm from "./components/Test";
 import PaymentSucess from "./pages/PaymentSucess";
 import PaymentCancel from "./pages/PaymentCancel";
 import GeminiText from "./pages/Gemini";
+import Precautions from "./pages/Precautions";
 
 
 export const router = createBrowserRouter([
@@ -102,6 +103,10 @@ export const router = createBrowserRouter([
    {
     path: "/gemini",
     element: <GeminiText/>,
+  },
+  {
+    path: "/precautions",
+    element: <Precautions/>,
   },
   {
     path: "/account",

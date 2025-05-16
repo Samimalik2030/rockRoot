@@ -29,6 +29,8 @@ const navigationLinks = [
   { title: "Room Ideas", href: "/room-ideas" },
 
   { title: "Contact", href: "/contact-us" },
+  { title: "Marble Care", href: "/precautions" },
+
 ];
 
 export default function Navbar() {
@@ -74,7 +76,7 @@ export default function Navbar() {
             <Group gap="md">
               <Burger opened={opened} onClick={toggle} hiddenFrom="sm" />
               <Title order={3} style={{ whiteSpace: "nowrap" }}>
-                RAJPUT MARBLE'S & GRANITE
+                 MARBLE'S & GRANITE
               </Title>
             </Group>
 
@@ -117,10 +119,10 @@ export default function Navbar() {
               )}
               {!user && (
                 <Group>
-                  <Button color="yellow" onClick={() => navigate("sign-in")}>
+                  <Button color="yellow" onClick={() => navigate("/sign-in")}>
                     SignIn
                   </Button>
-                  <Button color="yellow" onClick={() => navigate("sign-up")}>
+                  <Button color="yellow" onClick={() => navigate("/sign-up")}>
                     SignUp
                   </Button>
                 </Group>

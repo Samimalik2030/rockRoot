@@ -51,7 +51,7 @@ const ResetPassword = () => {
       setLoading(true);
       const response = await api.post("/auth/reset-password", {
         password: form.values.password,
-        confirmPassword:form.values.confirmPassword,
+        confirmPassword: form.values.confirmPassword,
         otp: state.otp,
         email: state.email,
       });
@@ -82,8 +82,7 @@ const ResetPassword = () => {
                 objectFit: "cover",
               }}
               src={
-                "https://images.unsplash.com/photo-1697394492615-e3cd49be4f91?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTh8fG1hcmJsZSUyMGhvdXNlc3xlbnwwfHwwfHx8MA%3D%3D"
-
+                "https://images.unsplash.com/photo-1659354116227-bbfde3fbd73f?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fG1hcmJsZSUyMHJvb21zfGVufDB8MXwwfHx8MA%3D%3D"
               }
             />
           </Card>
