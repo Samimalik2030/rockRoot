@@ -11,7 +11,6 @@ import {
   Title,
   Box,
   Flex,
-  ScrollArea,
   Image,
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
@@ -20,107 +19,33 @@ import CalendarIcon from "../assets/calendar-check.svg";
 import CalculatorIcon from "../assets/calculator.svg";
 import SettingsIcon from "../assets/settings-check.svg";
 import RevenueChart from "../components/RevenueChart";
-import { modals } from "@mantine/modals";
-import { useEffect } from "react";
+
+import { useEffect, useState } from "react";
+import api from "../api";
+import MyOrders from "./MyOrders";
+interface AnalyticsSummary {
+  productCount: number;
+  projectCount: number;
+  totalSales: number;
+  orderCount: number;
+}
 
 const Analytics = () => {
   const isMobile = useMediaQuery("(max-width: 56.25em)");
-  const data = [
-    {
-      tenant: "John Doe",
-      propertyName: "Sunset Villa",
-      propertyType: "Apartment",
-      project: "Phase 1",
-      pricePerDay: 120,
-      days: 5,
-      totalAmount: 600,
-      commission: 60,
-      received: 540,
-      paymentDate: "2025-04-10",
-      status: "Paid",
-    },
-    {
-      tenant: "John Doe",
-      propertyName: "Sunset Villa",
-      propertyType: "Apartment",
-      project: "Phase 1",
-      pricePerDay: 120,
-      days: 5,
-      totalAmount: 600,
-      commission: 60,
-      received: 540,
-      paymentDate: "2025-04-10",
-      status: "Paid",
-    },
-    {
-      tenant: "John Doe",
-      propertyName: "Sunset Villa",
-      propertyType: "Apartment",
-      project: "Phase 1",
-      pricePerDay: 120,
-      days: 5,
-      totalAmount: 600,
-      commission: 60,
-      received: 540,
-      paymentDate: "2025-04-10",
-      status: "Paid",
-    },
-    {
-      tenant: "John Doe",
-      propertyName: "Sunset Villa",
-      propertyType: "Apartment",
-      project: "Phase 1",
-      pricePerDay: 120,
-      days: 5,
-      totalAmount: 600,
-      commission: 60,
-      received: 540,
-      paymentDate: "2025-04-10",
-      status: "Paid",
-    },
-    // more items...
-  ];
+    const [summary, setSummary] = useState<AnalyticsSummary | undefined>(
+      undefined
+    );
+  const getAnalytics = async () => {
+  
+    const response = await api.get("analytics/summary");
+    if (response.data) {
+      setSummary(response.data);
+    }
+  };
   useEffect(() => {
-    modals.open({
-      title: "Work In Progress",
-      children: (
-        <Stack align="center" gap="md">
-          <Text size="lg" fw={500}>
-            This feature is currently under development.
-          </Text>
-          <Text size="sm" c="dimmed">
-            Please check back soon!
-          </Text>
-        </Stack>
-      ),
-    });
+    getAnalytics()
   }, []);
-  const rows = data.map((item, index) => (
-    <Table.Tr key={index}>
-      <Table.Td>{index + 1}</Table.Td>
-      <Table.Td>{item.tenant}</Table.Td>
-      <Table.Td>
-        {item.propertyName} ({item.propertyType})
-      </Table.Td>
-      <Table.Td>{item.project}</Table.Td>
-      <Table.Td>${item.pricePerDay}</Table.Td>
-      <Table.Td>{item.days}</Table.Td>
-      <Table.Td>${item.totalAmount}</Table.Td>
-      <Table.Td>${item.commission}</Table.Td>
-      <Table.Td>${item.received}</Table.Td>
-      <Table.Td>{item.paymentDate}</Table.Td>
-      <Table.Td>
-        <Badge
-          color="green"
-          variant="outline"
-          size={isMobile ? "xs" : "lg"}
-          radius="md"
-        >
-          {item.status}
-        </Badge>
-      </Table.Td>
-    </Table.Tr>
-  ));
+
   return (
     <Grid p="md">
       <Grid.Col span={12}>
@@ -144,7 +69,7 @@ const Analytics = () => {
                   <Text size="xs" c="dimmed">
                     Your total produsts that have been listed
                   </Text>
-                  <Title order={3}>12</Title>
+                  <Title order={3}>{summary?.productCount}</Title>
                 </Stack>
               </Flex>
             </Card>
@@ -168,7 +93,7 @@ const Analytics = () => {
                   <Text size="xs" c="dimmed">
                     Your total projects that have been done
                   </Text>
-                  <Title order={3}>06</Title>
+                  <Title order={3}>{summary?.projectCount}</Title>
                 </Stack>
               </Flex>
             </Card>
@@ -218,7 +143,7 @@ const Analytics = () => {
                   <Text size="xs" c="dimmed">
                     Count of total orders that have been completed
                   </Text>
-                  <Title order={3}>10</Title>
+                  <Title order={3}>{summary?.orderCount}</Title>
                 </Stack>
               </Flex>
             </Card>
@@ -250,48 +175,40 @@ const Analytics = () => {
               <Card shadow="sm" radius="md" withBorder h={200}>
                 <Stack gap={"xl"}>
                   <Stack>
-                    <Title order={5}>My Balance</Title>
-                    <Title order={3}>$123,000</Title>
+                    <Title order={5}>My Sales</Title>
+                    <Title order={3}>Rs.{summary?.totalSales}</Title>
                   </Stack>
 
                   <Stack gap={0}>
-                    <Group justify="space-between">
-                      <Text c="dimmed" size="sm">
-                        April’s Income
-                      </Text>
-                      <Title order={5}>Rs.15k</Title>
-                    </Group>
+                  
                     <Group justify="space-between">
                       <Text c="dimmed" size="sm">
                         Total Revenue
                       </Text>
-                      <Title order={5}> Rs.315k</Title>
+                      <Title order={5}> Rs.{summary?.totalSales}</Title>
                     </Group>
                   </Stack>
                 </Stack>
               </Card>
 
-              <Card withBorder h={235}>
-
-              <Flex gap="xs">
-                <Box>
-                  <Image height={50} w={50} src={SettingsIcon} />
-                </Box>
-                <Stack gap={12}>
-                  <Title order={3}>Pending Orders</Title>
-                  <Text size="lg" c="dimmed">
-                    Your total pending projects that have to ship
-                  </Text>
-                  <Title order={3}>06</Title>
-                </Stack>
-              </Flex>
-            </Card>
+              {/* <Card withBorder h={235}>
+                <Flex gap="xs">
+                  <Box>
+                    <Image height={50} w={50} src={SettingsIcon} />
+                  </Box>
+                  <Stack gap={12}>
+                    <Title order={3}>Pending Orders</Title>
+                    <Text size="lg" c="dimmed">
+                      Your total pending products that have to ship
+                    </Text>
+                    <Title order={3}>06</Title>
+                  </Stack>
+                </Flex>
+              </Card> */}
             </Stack>
           </Grid.Col>
         </Grid>
       </Grid.Col>
-
- 
     </Grid>
   );
 };

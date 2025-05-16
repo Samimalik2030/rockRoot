@@ -37,6 +37,7 @@ const VerifyOtp = () => {
   const form = useForm({
     initialValues: {
       otp: "",
+      type:"Forgot Password"
     },
     validate: yupResolver(validateSchema),
   });

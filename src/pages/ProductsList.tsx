@@ -46,14 +46,13 @@ export default function ProductsList() {
       name: "",
       price: 0,
       description: "",
-      dimensions: "",
-      thickness: "",
+      length: 0,
+      width: 0,
       finish: "",
       category: "",
       inStock: true,
-      color: "",
-      origin: "",
       tags: [] as string[],
+      thickness: 0,
     },
   });
 
@@ -77,7 +76,11 @@ export default function ProductsList() {
     if (product) {
       setIsUpdate(true);
       setProductId(product._id);
-      form.setValues({ ...product });
+      form.setValues({
+        ...product,
+        length: product.dimensions.length,
+        width: product.dimensions.length,
+      });
       setImage(product.image);
     } else {
       form.reset();
@@ -102,7 +105,10 @@ export default function ProductsList() {
       if (isUpdate && productId) {
         await api.patch(`/products/${productId}`, { ...values, image });
       } else {
-        await api.post("/products", { ...values, image });
+        await api.post("/products", {
+          ...values,
+          image,
+        });
       }
       await fetchProducts();
       closeModal();
@@ -165,7 +171,7 @@ export default function ProductsList() {
                 <Box h={250}>
                   <Image
                     h="100%"
-                    src={product.image.url}
+                    src={product.image?.url}
                     alt={product.name}
                     fit="cover"
                     radius="md"
@@ -174,7 +180,7 @@ export default function ProductsList() {
 
                 <Group gap="xs" mb="xs" mt={8}>
                   <Badge color="gray" variant="light" radius="xl">
-                    {product.origin}
+                    Pakistan
                   </Badge>
                   <Text size="sm" fw={500}>
                     ⭐ 4.5
@@ -190,10 +196,8 @@ export default function ProductsList() {
 
                 <Group justify="space-between" mt="md" align="center">
                   <Text fw={600} size="lg">
-                    ${product.price.toFixed(2)}{" "}
-                    <Text component="span" size="sm" c="dimmed">
-                      per sq ft
-                    </Text>
+                    Rs.{product.price.toFixed(2)}{" "}
+                   
                   </Text>
                 </Group>
               </Card>
@@ -212,53 +216,60 @@ export default function ProductsList() {
           <Stack>
             <FileInput
               label="Image"
-              placeholder="Upload image"
+              placeholder="Upload an image of the product"
               onChange={handleImageChange}
               accept="image/*"
             />
-            <TextInput label="Name" required {...form.getInputProps("name")} />
+            <Checkbox
+              label="In Stock"
+              {...form.getInputProps("inStock", { type: "checkbox" })}
+            />
+            <TextInput
+              label="Name"
+              placeholder="e.g., Carrara White Marble"
+              required
+              {...form.getInputProps("name")}
+            />
             <NumberInput
+              hideControls
               label="Price"
+              placeholder="Enter price in PKR"
               required
               {...form.getInputProps("price")}
             />
             <Textarea
               label="Description"
+              placeholder="Enter a brief description of the product"
               {...form.getInputProps("description")}
             />
-            <Select
-              label="Dimensions"
-              data={[
-                "12 x 12 inches (300 x 300 mm)",
-                "16 x 16 inches (400 x 400 mm)",
-                "18 x 18 inches (457 x 457 mm)",
-                "24 x 24 inches (600 x 600 mm)",
-                "12 x 24 inches (300 x 600 mm)",
-                "6 x 3 feet (1800 x 900 mm)",
-                "8 x 4 feet (2400 x 1200 mm)",
-                "10 x 5 feet (3000 x 1500 mm)",
-                "9 x 6 feet (2700 x 1800 mm)",
-              ]}
-              {...form.getInputProps("dimensions")}
-            />
-            <Select
-              label="Thickness"
-              data={[
-                "10 mm",
-                "12 mm",
-                "14 mm",
-                "16 mm",
-                "18 mm",
-                "20 mm",
-                "25 mm",
-                "30 mm",
-                "40 mm",
-                "50 mm",
-              ]}
+            <Group>
+              <NumberInput
+                w={"48%"}
+                hideControls
+                label="Length (in inches)"
+                placeholder="e.g., 24 inches"
+                maxLength={2}
+                {...form.getInputProps("length")}
+              />{" "}
+              <NumberInput
+                hideControls
+                label="Width (in inches)"
+                placeholder="e.g., 12 inches"
+                maxLength={2}
+                w={"48%"}
+                {...form.getInputProps("width")}
+              />
+            </Group>
+            <NumberInput
+              hideControls
+              maxLength={2}
+              label="Thickness (in mm)"
+              placeholder="Enter thickness in millimeters"
               {...form.getInputProps("thickness")}
             />
             <Select
               label="Finish"
+              placeholder="Select finish type"
               data={[
                 "polished",
                 "honed",
@@ -280,36 +291,15 @@ export default function ProductsList() {
             />
             <Select
               label="Category"
-              data={[
-                "Italian Marble",
-                "Pakistani Marble",
-                "Granite",
-                "Onyx",
-                "Quartz",
-                "Travertine",
-              ]}
+              placeholder="Choose marble category"
+              data={["Floor", "Stairs", "Kitchen"]}
               required
               {...form.getInputProps("category")}
             />
-            <Checkbox
-              label="In Stock"
-              {...form.getInputProps("inStock", { type: "checkbox" })}
-            />
 
-            <Select
-              data={[
-                { value: "Italy", label: "Italy (Italian Marble)" },
-                { value: "Pakistan", label: "Pakistan (Pakistani Marble)" },
-                { value: "India", label: "India (Granite)" },
-                { value: "Mexico", label: "Mexico (Onyx)" },
-                { value: "Brazil", label: "Brazil (Quartz)" },
-                { value: "Turkey", label: "Turkey (Travertine)" },
-              ]}
-              label="Origin"
-              {...form.getInputProps("origin")}
-            />
             <MultiSelect
               label="Tags"
+              placeholder="Add relevant tags (e.g., luxury, floor)"
               data={[
                 "luxury",
                 "floor",

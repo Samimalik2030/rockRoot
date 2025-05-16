@@ -14,18 +14,73 @@ import {
   Select,
   Textarea,
   Radio,
+  BackgroundImage,
+  Box,
 } from "@mantine/core";
 import Navbar from "../components/Navbar";
 import { Footer } from "../components/Footer";
 import { modals } from "@mantine/modals";
+import { useForm } from "@mantine/form";
+import api from "../api";
 
 function ContactUs() {
+  const form = useForm({
+    initialValues: {
+      username: "",
+      email: "",
+      phone: "",
+      type: "general",
+      subject: "",
+      query: "",
+    },
+
+    validate: {
+      username: (value) =>
+        value.trim().length > 0 ? null : "Name is required",
+      email: (value) => (/^\S+@\S+$/.test(value) ? null : "Invalid email"),
+      phone: (value) =>
+        value.trim().length > 0 ? null : "Phone number is required",
+      type: (value) => (value ? null : "Inquiry type is required"),
+      subject: (value) =>
+        value.trim().length > 0 ? null : "Subject is required",
+      query: (value) =>
+        value.trim().length > 0 ? null : "Message is required",
+    },
+  });
+  const handleSubmit = async () => {
+    const response = await api.post("/inquiry", form.values);
+    if (response.data) {
+      form.reset();
+    }
+  };
   return (
     <>
       <Navbar />
-      <Stack>
-        <Card shadow="sm" h={260} bg={"#1f2937"}>
-          <Stack mt={20} gap={15}>
+      <Card p={0} radius="md" style={{ overflow: "hidden" }}>
+        <BackgroundImage
+          h={300}
+          src="https://images.unsplash.com/photo-1740560051533-3acef26ace95?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Y29udGFjdCUyMCUyMHBhZ2UlMjB1aXxlbnwwfDB8MHx8fDA%3D"
+          style={{ position: "relative" }}
+        >
+          {/* Dark overlay */}
+          <Box
+            style={{
+              position: "absolute",
+              inset: 0,
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              zIndex: 1,
+            }}
+          />
+
+          {/* Centered Content */}
+          <Flex
+            justify="center"
+            align="center"
+            h="100%"
+            style={{ position: "relative", zIndex: 2 }}
+          >
+            <Card w="50%" bg="transparent" shadow="none">
+              <Stack mt={20} gap={15}>
             <Title fw={700} fz={52} ta={"center"} c={"white"}>
               Get In Touch
             </Title>
@@ -34,12 +89,16 @@ function ContactUs() {
               start your project.
             </Text>
           </Stack>
-        </Card>
+            </Card>
+          </Flex>
+        </BackgroundImage>
+      </Card>
 
+      <Stack>
+       
         <Container
           bg={"#f2f4f8ff"}
           w={"100vw"}
-     
           fluid
           px={40}
           py={80}
@@ -47,80 +106,75 @@ function ContactUs() {
         >
           <Grid>
             <Grid.Col span={8}>
-              <Card shadow="sm" padding="lg" radius="md" withBorder>
-                <Title order={2} mb="md">
-                  Reach Out To Us
-                </Title>
+              <Card>
+                <form onSubmit={form.onSubmit(handleSubmit)}>
+                  <Flex gap={30}>
+                    <TextInput
+                      w="50%"
+                      label="Full Name"
+                      placeholder="Your name"
+                      mb="sm"
+                      {...form.getInputProps("username")}
+                    />
+                    <TextInput
+                      w="50%"
+                      label="Email"
+                      placeholder="Your email"
+                      type="email"
+                      mb="sm"
+                      {...form.getInputProps("email")}
+                    />
+                  </Flex>
 
-                <Flex gap={30}>
+                  <Flex gap={30}>
+                    <TextInput
+                      w="50%"
+                      label="Phone Number"
+                      placeholder="Your phone number"
+                      mb="sm"
+                      {...form.getInputProps("phone")}
+                    />
+                    <Select
+                      w="50%"
+                      label="Inquiry Type"
+                      placeholder="General Inquiry"
+                      data={[
+                        { value: "general", label: "General Inquiry" },
+                        { value: "sales", label: "Sales Inquiry" },
+                        { value: "support", label: "Support" },
+                        { value: "other", label: "Other" },
+                      ]}
+                      mb="sm"
+                      {...form.getInputProps("type")}
+                    />
+                  </Flex>
+
                   <TextInput
-                    w={"50%"}
-                    label="Full Name"
-                    placeholder="Your name"
-                    mb="sm"
+                    label="Subject"
+                    placeholder="How can we help you?"
+                    mb="lg"
+                    {...form.getInputProps("subject")}
                   />
-                  <TextInput
-                    w={"50%"}
-                    label="Email"
-                    placeholder="Your email"
-                    type="email"
-                    mb="sm"
-                  />
-                </Flex>
 
-                <Flex gap={30}>
-                  <TextInput
-                    w={"50%"}
-                    label="Phone Number"
-                    placeholder="Your phone number"
-                    mb="sm"
+                  <Textarea
+                    label="Message"
+                    placeholder="Your Message"
+                    rows={6}
+                    radius={8}
+                    mb={12}
+                    {...form.getInputProps("query")}
                   />
-                  <Select
-                    w={"50%"}
-                    label="Inquiry Type"
-                    placeholder="General Inquiry"
-                    data={[
-                      { value: "general", label: "General Inquiry" },
-                      { value: "sales", label: "Sales Inquiry" },
-                      { value: "support", label: "Support" },
-                      { value: "other", label: "Other" },
-                    ]}
-                    mb="sm"
-                  />
-                </Flex>
-                <TextInput
-                  label="Subject"
-                  placeholder="How can we help you?"
-                  //   autosize
-                  //   minRows={2}
-                  mb="lg"
-                />
 
-                <Textarea
-                  label="Message"
-                  placeholder="Your Message"
-                  rows={6}
-                  radius={8}
-                  mb={12}
-                />
-
-                <Button fullWidth color="#ff9c07" radius="5" h={42} onClick={()=>{
-                      modals.open({
-                        title: "Work In Progress",
-                        children: (
-                          <Stack align="center" gap="md">
-                            <Text size="lg" fw={500}>
-                              This feature is currently under development.
-                            </Text>
-                            <Text size="sm" c="dimmed">
-                              Please check back soon!
-                            </Text>
-                          </Stack>
-                        ),
-                      });
-                }}>
-                  Send
-                </Button>
+                  <Button
+                    fullWidth
+                    color="#ff9c07"
+                    radius="5"
+                    h={42}
+                    type="submit"
+                  >
+                    Send
+                  </Button>
+                </form>
               </Card>
             </Grid.Col>
             <Grid.Col span={4}>
@@ -203,8 +257,6 @@ function ContactUs() {
                     </Group>
                   </Stack>
                 </Card>
-
-                
               </Stack>
             </Grid.Col>
           </Grid>

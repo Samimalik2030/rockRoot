@@ -12,14 +12,22 @@ import ForgotPassword from "./auth/forgot-password";
 import VerifyOtp from "./auth/verify-otp";
 import ResetPassword from "./auth/reset-password";
 import About from "./pages/AboutUs";
-import Collections from "./pages/Collections";
-import CollectionsCard from "./components/CollectionsCard";
 import Products from "./pages/Products";
-import MyOrders from "./pages/MyOrders";
 import ContactUs from "./pages/ContactUs";
 import RoomIdeas from "./components/RoomIdeas";
 import Cart from "./pages/Cart";
 import MyWishlist from "./pages/MyWishlist";
+import CheckOut from "./pages/Checkout";
+import Support from "./pages/Support";
+import { ProductDetails } from "./pages/ProductDetails";
+import MyAccount from "./pages/MyAccount";
+import MyOrders from "./pages/MyOrders";
+import Wishlist from "./pages/Wishlist";
+import AccountSettings from "./pages/AccountSettings";
+import PayfastRedirectForm from "./components/Test";
+import PaymentSucess from "./pages/PaymentSucess";
+import PaymentCancel from "./pages/PaymentCancel";
+import GeminiText from "./pages/Gemini";
 
 
 export const router = createBrowserRouter([
@@ -80,8 +88,46 @@ export const router = createBrowserRouter([
     element: <MyWishlist/>,
   },
   {
+    path: "/test",
+    element: <PayfastRedirectForm/>,
+  },
+  {
+    path: "/payment-sucess",
+    element: <PaymentSucess/>,
+  },
+  {
+    path: "/payment-failure",
+    element: <PaymentCancel/>,
+  },
+   {
+    path: "/gemini",
+    element: <GeminiText/>,
+  },
+  {
     path: "/account",
-    element: <MyOrders/>,
+    element: <MyAccount/>,
+    children:[
+      {
+        path:'orders',
+        element:<MyOrders/>
+      },
+      {
+        path:'wishlist',
+        element:<Wishlist/>
+      },
+      {
+        path:'settings',
+        element:<AccountSettings/>
+      }
+    ]
+  },
+  {
+    path: "/checkout",
+    element: <CheckOut/>,
+  },
+   {
+    path: "/product-details",
+    element: <ProductDetails/>,
   },
   {
     path: "/dashboard",
@@ -103,6 +149,10 @@ export const router = createBrowserRouter([
         path: "projects",
         element: <ProjectsList />,
       },
+      {
+        path: "support",
+        element: <Support />,
+      }
     ],
   },
 ]);

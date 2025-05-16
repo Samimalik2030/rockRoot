@@ -22,13 +22,18 @@ import { IUser } from "../interfaces/IUser";
 import { ICart } from "../interfaces/Cart";
 import { OrderSummary } from "../interfaces/OrderSummary";
 import { modals } from "@mantine/modals";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function Cart() {
   const user: IUser = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user") as string)
     : null;
   const [carts, setCarts] = useState<ICart[]>([]);
+  const [cart, setCart] = useState<ICart | null>(null);
+const navigate = useNavigate()
   const [summary, setSummary] = useState<OrderSummary | null>(null);
+  const [quantity, setQuantity] = useState<number | undefined>(cart?.quantity);
 
   const getCarts = async () => {
     try {
@@ -60,6 +65,16 @@ export default function Cart() {
     getCarts();
     getSummary();
   }, []);
+
+  const handleUpdateCart = async (cartId: string, newQuantity: number) => {
+    try {
+      await api.patch(`/carts/${cartId}`, { quantity: newQuantity });
+      await getCarts();
+      await getSummary();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleDeleteCart = async (cartId: string) => {
     try {
@@ -107,7 +122,8 @@ export default function Cart() {
                             {cart.product.name}
                           </Text>
                           <Text size="sm" c="dimmed">
-                            Size: {cart.product.dimensions}
+                            Size: {cart.product.dimensions.length} *{" "}
+                            {cart.product.dimensions.width}
                           </Text>
                           <Text size="sm" c="dimmed">
                             Thickness: {cart.product.thickness}
@@ -119,41 +135,50 @@ export default function Cart() {
                             quantity: {cart.quantity}
                           </Text>
 
-                          {/* <Group mt="sm" gap="xs">
+                          <Group mt="sm" gap="xs">
                             <Button
                               variant="default"
                               size="compact-sm"
-                              onClick={() =>
-                                setQuantity((q) => Math.max(1, q - 1))
-                              }
+                              onClick={() => {
+                                if (cart.quantity > 1) {
+                                  handleUpdateCart(cart._id, cart.quantity - 1);
+                                }
+                              }}
                             >
                               -
                             </Button>
+
                             <NumberInput
                               value={cart.quantity}
-                              onChange={(val) => setQuantity(Number(val))}
+                              onChange={(val) => {
+                                const quantity = Number(val);
+                                if (quantity >= 1) {
+                                  handleUpdateCart(cart._id, quantity);
+                                }
+                              }}
                               min={1}
                               hideControls
                               w={60}
                               styles={{ input: { textAlign: "center" } }}
                             />
+
                             <Button
                               variant="default"
                               size="compact-sm"
-                              onClick={() => setQuantity((q) => q + 1)}
+                              onClick={() =>
+                                handleUpdateCart(cart._id, cart.quantity + 1)
+                              }
                             >
                               +
                             </Button>
-                          </Group> */}
+                          </Group>
                         </Stack>
 
                         <Stack align="flex-end" gap="xs">
                           <Text fw={600} size="lg">
-                            ${cart.product.price.toFixed(2)}
+                            Rs.{cart.product.price.toFixed(2)}
                           </Text>
-                          <Text size="sm" c="dimmed">
-                            $129.99 per sq ft
-                          </Text>
+
                           <Button
                             variant="subtle"
                             color="red"
@@ -167,89 +192,96 @@ export default function Cart() {
                         </Stack>
                       </Group>
                     </Card>
+                    <Divider mt={6} />
                   </>
                 ))}
               </Card>
             </Box>
           </Grid.Col>
           <Grid.Col span={4}>
+               {!carts.length && (
+              <Card
+                shadow="sm"
+                radius="md"
+                withBorder
+                px={"25px"}
+                py={"40px"}
+                mt={90}
+              >
+                <Title order={3} mb="md">
+                  Order Summary
+                </Title>
+
+                 <Text>No items in cart</Text>
+
+               
+              </Card>
+            )}
             <Card
-              shadow="sm"
-              radius="md"
-              withBorder
-              px={"25px"}
-              py={"40px"}
-              mt={90}
-            >
-              <Title order={3} mb="md">
-                Order Summary
-              </Title>
+                shadow="sm"
+                radius="md"
+                withBorder
+                px={"25px"}
+                py={"40px"}
+                mt={90}
+              >
+                <Title order={3} mb="md">
+                  Order Summary
+                </Title>
 
-              <Group mb="xs" justify="space-between">
-                <Text color="dimmed" fz={18} fw={500}>
-                  Subtotal
-                </Text>
-                <Text fz={16} fw={500}>
-                  {summary?.subtotal}
-                </Text>
-              </Group>
+                <Group mb="xs" justify="space-between">
+                  <Text color="dimmed" fz={18} fw={500}>
+                    Subtotal
+                  </Text>
+                  <Text fz={16} fw={500}>
+                    {summary?.subtotal}
+                  </Text>
+                </Group>
 
-              <Group mb="xs" justify="space-between">
-                <Text color="dimmed" fz={18} fw={500}>
-                  Shipping
-                </Text>
-                <Text fz={16} fw={500}>
-                  {summary?.shipping}
-                </Text>
-              </Group>
+                <Group mb="xs" justify="space-between">
+                  <Text color="dimmed" fz={18} fw={500}>
+                    Shipping
+                  </Text>
+                  <Text fz={16} fw={500}>
+                    {summary?.shipping}
+                  </Text>
+                </Group>
 
-              <Group mb="md" justify="space-between">
-                <Text color="dimmed" fz={18} fw={500}>
-                  Tax
-                </Text>
-                <Text fz={16} fw={500}>
-                  {summary?.tax}
-                </Text>
-              </Group>
+                <Group mb="md" justify="space-between">
+                  <Text color="dimmed" fz={18} fw={500}>
+                    Tax
+                  </Text>
+                  <Text fz={16} fw={500}>
+                    {summary?.tax}
+                  </Text>
+                </Group>
 
-              <Divider mb="md" />
+                <Divider mb="md" />
 
-              <Group mb="lg" justify="space-between">
-                <Text fw={700} fz={18}>
-                  Total
-                </Text>
-                <Text fw={700} fz={18}>
-                  {summary?.total}
-                </Text>
-              </Group>
+                <Group mb="lg" justify="space-between">
+                  <Text fw={700} fz={18}>
+                    Total
+                  </Text>
+                  <Text fw={700} fz={18}>
+                    Rs. {summary?.total}
+                  </Text>
+                </Group>
 
-              <Stack>
-                <Button
-                  fullWidth
-                  color="orange"
-                  radius={6}
-                  c={"black"}
-                  h={42}
-                  onClick={() => {
-                    modals.open({
-                      title: "Work In Progress",
-                      children: (
-                        <Stack align="center" gap="md">
-                          <Text size="lg" fw={500}>
-                            This feature is currently under development.
-                          </Text>
-                          <Text size="sm" c="dimmed">
-                            Please check back soon!
-                          </Text>
-                        </Stack>
-                      ),
-                    });
-                  }}
-                >
-                  Proceed to Checkout →
-                </Button>
-              </Stack>
-            </Card>
+                <Stack>
+                  <Button
+                    fullWidth
+                    color="orange"
+                    radius={6}
+                    c={"black"}
+                    h={42}
+                    onClick={() => {
+                     navigate('/checkout')
+                    }}
+                  >
+                    Proceed to Checkout →
+                  </Button>
+                </Stack>
+              </Card>
           </Grid.Col>
         </Grid>
       </Container>

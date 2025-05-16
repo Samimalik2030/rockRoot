@@ -9,6 +9,7 @@ import {
   Flex,
   Center,
   Button,
+  BackgroundImage,
 } from "@mantine/core";
 import Navbar from "./Navbar";
 import { Footer } from "./Footer";
@@ -16,49 +17,76 @@ import { RoomIdeasCard } from "./RoomIdeaCard";
 import { useNavigate } from "react-router-dom";
 
 function RoomIdeas() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const imageUrl =
     "https://ik.imagekit.io/bh2albdmg/frames-for-your-heart-2d4lAQAlbDA-unsplash%20(1).jpg?updatedAt=1740806605782";
   return (
     <>
       <Navbar />
       <Stack>
-        <Card shadow="sm" h={260} bg={"#1f2937"}>
-          <Stack mt={20} gap={15}>
-            <Title fw={700} fz={56} ta={"center"} c={"white"}>
-              Room Ideas
-            </Title>
-            <Group justify="center">
-              <Text color="dimmed" fz={26} fw={600} ta={"center"} w={"60%"}>
-                Get inspired with our curated collection of design ideas for
-                every space
-              </Text>
-            </Group>
-          </Stack>
+        <Card p={0} radius="md" style={{ overflow: "hidden" }}>
+          <BackgroundImage
+            h={300}
+            src="https://images.unsplash.com/photo-1668173320604-6e0df7347b52?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjU5fHxtYXJibGUlMjBmdXJuc2loZWQlMjByb29tc3xlbnwwfDB8MHx8fDA%3D"
+            style={{ position: "relative" }}
+          >
+            {/* Dark overlay */}
+            <Box
+              style={{
+                position: "absolute",
+                inset: 0,
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
+                zIndex: 1,
+              }}
+            />
+
+            {/* Centered Content */}
+            <Flex
+              justify="center"
+              align="center"
+              h="100%"
+              style={{ position: "relative", zIndex: 2 }}
+            >
+              <Card w="50%" bg="transparent" shadow="none">
+                <Stack mt={20} gap={15}>
+                  <Title fw={700} fz={56} ta={"center"} c={"white"}>
+                    Room Ideas
+                  </Title>
+                  <Group justify="center">
+                    <Text
+                      color="dimmed"
+                      fz={26}
+                      fw={600}
+                      ta={"center"}
+                      w={"60%"}
+                    >
+                      Get inspired with our curated collection of design ideas
+                      for every space
+                    </Text>
+                  </Group>
+                </Stack>
+              </Card>
+            </Flex>
+          </BackgroundImage>
         </Card>
+
         <Stack gap={12}>
-              <Text c={"#ff9918"} fz={18} fw={500} ta={"center"}>
-                Expert Advice
-              </Text>
-              <Title fz={42} ta={"center"} >
-                Design Tips from Our Experts
-              </Title>
-              <Group justify="center">
-                <Box
-                  w={80}
-                  h={4}
-                  bg={"#ff9900"}
-                  style={{ borderRadius: 20 }}
-                ></Box>
-              </Group>
-              <Text fz={22} fw={500} ta={"center"} color="dimmed">
-                Professional insights to help you make the most of natural stone
-                in your home
-              </Text>
-            </Stack>
+          <Text c={"#ff9918"} fz={18} fw={500} ta={"center"}>
+            Expert Advice
+          </Text>
+          <Title fz={42} ta={"center"}>
+            Design Tips from Our Experts
+          </Title>
+          <Group justify="center">
+            <Box w={80} h={4} bg={"#ff9900"} style={{ borderRadius: 20 }}></Box>
+          </Group>
+          <Text fz={22} fw={500} ta={"center"} color="dimmed">
+            Professional insights to help you make the most of natural stone in
+            your home
+          </Text>
+        </Stack>
         <Card px={20} py={30}>
           <Stack gap={50} px={200}>
-           
             {/* //////////// */}
             <SimpleGrid cols={3} spacing={20}>
               {/* //////////// */}
@@ -356,14 +384,17 @@ function RoomIdeas() {
             c={"black"}
             fz={16}
             fw={600}
-            onClick={()=>navigate('/contact-us')}
+            onClick={() => navigate("/contact-us")}
           >
             Contact Us
           </Button>
 
-          <Button c={"white"} radius="6px" w={170} h={44}
-            onClick={()=>navigate('/products')}
-          
+          <Button
+            c={"white"}
+            radius="6px"
+            w={170}
+            h={44}
+            onClick={() => navigate("/products")}
           >
             Explore Products
           </Button>

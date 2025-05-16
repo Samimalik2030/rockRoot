@@ -1,125 +1,10 @@
-import {
-  Avatar,
-  Card,
-  CheckIcon,
-  Divider,
-  Grid,
-  NavLink,
-  Stack,
-  Text,
-  Flex,
-  Container,
-  Title,
-  Group,
-  Button,
-  Badge,
-} from "@mantine/core";
-import { useNavigate } from "react-router-dom";
-import { modals } from "@mantine/modals";
-import Navbar from "../components/Navbar";
-import WhyChooseUs from "../components/WhyChooseUs";
-import { Footer } from "../components/Footer";
-import { useEffect } from "react";
+import { Card, Stack, Flex, Group, Badge, Divider, Button,Text,Title} from "@mantine/core";
 
-function MyOrders() {
-  const navigate = useNavigate();
-  const openLogoutModal = () => {
-    modals.openConfirmModal({
-      title: "Confirm Logout",
-      centered: true,
-      children: <p>Are you sure you want to logout?</p>,
-      labels: { confirm: "Logout", cancel: "Cancel" },
-      confirmProps: { color: "red" },
-      onConfirm: () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        navigate("/sign-in");
-        window.location.reload();
-      },
-    });
-  };
 
-  useEffect(() => {
-    modals.open({
-      title: "Work In Progress",
-      children: (
-        <Stack align="center" gap="md">
-          <Text size="lg" fw={500}>
-            This feature is currently under development.
-          </Text>
-          <Text size="sm" c="dimmed">
-            Please check back soon!
-          </Text>
-        </Stack>
-      ),
-    });
-  }, []);
-
-  return (
-    <>
-      <Navbar />
-      <Container
-        bg={"#f2f4f8ff"}
-        w={"100vw"}
-        h={"100vh"}
-        fluid
-        px={40}
-        py={80}
-        style={{ border: "2px solid #e2e8f0" }}
-      >
-        <Grid>
-          <Grid.Col span={3}>
-            <Card
-              withBorder
-              radius="md"
-              shadow="sm"
-              p="lg"
-              w={280}
-              style={{ border: "2px solid #e2e8f0" }}
-            >
-              <Stack gap="xs">
-                {/* Profile Header */}
-                <Flex align="center" gap={20}>
-                  <Avatar
-                    src="https://placehold.co/48x48"
-                    size="lg"
-                    radius="xl"
-                  />
-                  <Text fw={600} fz={22}>
-                    User
-                  </Text>
-                </Flex>
-
-                {/* Navigation Links */}
-                <Stack gap={2} mt="sm">
-                  <NavLink label="Orders" leftSection={<CheckIcon />} active />
-                  <NavLink label="Wishlist" leftSection={<CheckIcon />} />
-                  <NavLink label="Profile" leftSection={<CheckIcon />} />
-                  <NavLink
-                    label="Payment Methods"
-                    leftSection={<CheckIcon />}
-                  />
-                  <NavLink label="Settings" leftSection={<CheckIcon />} />
-                </Stack>
-
-                <Divider my="sm" />
-
-                {/* Sign Out */}
-                <NavLink
-                  fz={18}
-                  fw={500}
-                  c={"#f06471"}
-                  label="Sign Out"
-                  leftSection={<CheckIcon />}
-                  color="red"
-                  variant="light"
-                  onClick={() => openLogoutModal()}
-                />
-              </Stack>
-            </Card>
-          </Grid.Col>
-          <Grid.Col span={9}>
-            <Card>
+export default function MyOrders(){
+    return(
+        <>
+          <Card>
               <Stack>
                 <Stack gap={5}>
                   <Title fz={24} fw={600}>
@@ -214,13 +99,7 @@ function MyOrders() {
                 </Card>
               </Stack>
             </Card>
-          </Grid.Col>
-        </Grid>
-      </Container>
-      <WhyChooseUs />
-      <Footer />
-    </>
-  );
-}
 
-export default MyOrders;
+        </>
+    )
+}

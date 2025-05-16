@@ -33,6 +33,7 @@ const ForgotPassword = () => {
   const form = useForm({
     initialValues: {
       email: "",
+      type:"Forgot Password"
     },
     validate: yupResolver(validateSchema),
   });

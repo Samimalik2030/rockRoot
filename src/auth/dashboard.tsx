@@ -21,6 +21,7 @@ import { modals } from "@mantine/modals";
 import IconCart from "../assets/icons/IconCart";
 import IconCards from "../assets/icons/IconCards";
 import IconWallet from "../assets/icons/IconWallet";
+import IconUserQuestion from "../assets/icons/IconUserQuestion";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -60,6 +61,17 @@ const Dashboard = () => {
         <IconCards
           color={
             location.pathname === "/dashboard/projects" ? "white" : "black"
+          }
+        />
+      ),
+    },
+    {
+      label: "Support",
+      link: "/dashboard/support",
+      icon: (
+        <IconUserQuestion
+          color={
+            location.pathname === "/dashboard/support" ? "white" : "black"
           }
         />
       ),
@@ -119,7 +131,7 @@ const Dashboard = () => {
               <Avatar h={50} w={50} src={user?.profileImage?.url} />
               <Box>
                 <Text fz={14} truncate w={100} lh={1}>
-                  {user?.name}
+                  {user?.fullName}
                 </Text>
                 <Text truncate w={100} fz={12} lh={1}>
                   {user?.email}

@@ -8,6 +8,7 @@ import {
   Drawer,
   Flex,
   Group,
+  Indicator,
   Title,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -16,6 +17,9 @@ import IconCart from "../assets/icons/IconCart";
 import IconHeart from "../assets/icons/IconHeart";
 import IconUser from "../assets/icons/IconUser";
 import { IUser } from "../interfaces/IUser";
+import api from "../api";
+import { useEffect, useState } from "react";
+import { ICart } from "../interfaces/Cart";
 
 const navigationLinks = [
   { title: "Home", href: "/" },
@@ -28,7 +32,7 @@ const navigationLinks = [
 ];
 
 export default function Navbar() {
-  const user: IUser | null = localStorage.getItem("user")
+  const user: IUser = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user") as string)
     : null;
 
@@ -36,12 +40,27 @@ export default function Navbar() {
   const navigate = useNavigate();
   const [opened, { toggle, close }] = useDisclosure(false);
   const handleClick = () => {
-    if (!user) {
-      navigate("/sign-in");
-    } else {
-      navigate("/account");
+    navigate("/account/orders");
+  };
+
+  const [carts, setCarts] = useState<ICart[]>([]);
+
+  const getCarts = async () => {
+    try {
+      const { data } = await api.get(`carts/${user._id}`);
+      if (data) {
+        setCarts(data);
+      } else {
+        setCarts([]);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
+
+  useEffect(() => {
+    getCarts();
+  }, []);
   return (
     <>
       <Container fluid p={0}>
@@ -76,7 +95,7 @@ export default function Navbar() {
             <Group gap="md">
               {user && user.role === "Admin" && (
                 <Button
-                size="sm"
+                  size="sm"
                   variant="outline"
                   onClick={() => navigate("/dashboard/analytics")}
                 >
@@ -91,16 +110,30 @@ export default function Navbar() {
                   <IconHeart color="black" />
                 </ActionIcon>
               )}
-              <ActionIcon onClick={() => handleClick()} variant="transparent">
-                <IconUser color="black" />
-              </ActionIcon>
-              {user && user.role === "Customer" && (
-                <ActionIcon
-                  onClick={() => navigate("/cart")}
-                  variant="transparent"
-                >
-                  <IconCart color="black" />
+              {user && (
+                <ActionIcon onClick={() => handleClick()} variant="transparent">
+                  <IconUser color="black" />
                 </ActionIcon>
+              )}
+              {!user && (
+                <Group>
+                  <Button color="yellow" onClick={() => navigate("sign-in")}>
+                    SignIn
+                  </Button>
+                  <Button color="yellow" onClick={() => navigate("sign-up")}>
+                    SignUp
+                  </Button>
+                </Group>
+              )}
+              {user && user.role === "Customer" && (
+                <Indicator label={carts?.length} size={"sm"}>
+                  <ActionIcon
+                    onClick={() => navigate("/cart")}
+                    variant="transparent"
+                  >
+                    <IconCart color="black" />
+                  </ActionIcon>
+                </Indicator>
               )}
             </Group>
           </Flex>

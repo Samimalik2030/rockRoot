@@ -51,6 +51,7 @@ const ResetPassword = () => {
       setLoading(true);
       const response = await api.post("/auth/reset-password", {
         password: form.values.password,
+        confirmPassword:form.values.confirmPassword,
         otp: state.otp,
         email: state.email,
       });

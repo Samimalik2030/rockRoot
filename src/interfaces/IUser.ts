@@ -1,10 +1,12 @@
-
 export enum Role {
-  ADMIN = 'Admin',
-  CUSTOMER = 'Customer'
+  ADMIN = "Admin",
+  CUSTOMER = "Customer",
 }
 
-
+export interface FileDto {
+  fileId: string;
+  url: string;
+}
 export interface IUser {
   _id: string;
   fullName: string;
@@ -14,9 +16,5 @@ export interface IUser {
   createdAt: Date;
   updatedAt: Date;
   __v: number;
+  profileImage: FileDto;
 }
-  export interface FileDto{
-    fileId:string
-    url:string
-  }
-  
