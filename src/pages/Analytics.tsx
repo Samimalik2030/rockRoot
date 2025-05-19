@@ -154,15 +154,10 @@ const Analytics = () => {
       <Grid.Col span={12}>
         <Grid>
           <Grid.Col span={isMobile ? 12 : 8}>
-            <Card shadow="sm" radius="md" withBorder h={450}>
+            <Card shadow="sm" radius="md" withBorder>
               <Group justify="space-between" mb="sm">
                 <Title order={4}>Income Analytics</Title>
-                <Select
-                  data={["2025", "2024"]}
-                  defaultValue="2025"
-                  w={100}
-                  size="sm"
-                />
+               
               </Group>
               <Box h={420}>
                 <RevenueChart />
