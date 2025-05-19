@@ -174,8 +174,8 @@ export default function Products() {
                   color="black"
                 />
                 <Checkbox
-                  checked={selectedCategory === "Stair"}
-                  onChange={() => handleCategoryChange("Stair")}
+                  checked={selectedCategory === "Stairs"}
+                  onChange={() => handleCategoryChange("Stairs")}
                   label="Stair"
                   fw={600}
                   color="black"
@@ -414,7 +414,7 @@ export default function Products() {
                         {/* Price & Details */}
                         <Group justify="space-between" mt="md" align="center">
                           <Text fw={600} size="lg">
-                            ${product.price.toFixed(2)}{" "}
+                            Rs.{product.price.toFixed(2)}{" "}
                             <Text component="span" size="sm" color="dimmed">
                               per sq ft
                             </Text>

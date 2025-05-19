@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -8,45 +9,11 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { Box } from "@mantine/core";
+import { Box, Text } from "@mantine/core";
+import axios from "axios";
+import api from "../api";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
-
-const data = {
-  labels: [
-    "Jan",
-    "Feb",
-    "Mar",
-    "April",
-    "May",
-    "June",
-    "July",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ],
-  datasets: [
-    {
-      label: "Revenue",
-      data: [
-        17000, 32000, 27000, 12000, 21000, 40000, 27000, 19000, 31000, 15000,
-        28000, 39000,
-      ],
-      backgroundColor: "rgba(66, 135, 245, 0.7)",
-      borderRadius: 6,
-      barThickness: 20,
-    },
-  ],
-};
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const options = {
   responsive: true,
@@ -54,7 +21,7 @@ const options = {
     legend: { display: false },
     tooltip: {
       callbacks: {
-        label: (ctx: any) => `$${(ctx.raw / 1000).toFixed(1)}K`,
+        label: (ctx: any) => `${(ctx.raw / 1000).toFixed(1)}K`,
       },
     },
   },
@@ -64,24 +31,51 @@ const options = {
       ticks: {
         callback: (value: any) => `${value / 1000}K`,
       },
-      grid: {
-        color: "transparent",
-      },
+      grid: { color: "transparent" },
     },
     x: {
-      grid: {
-        display: false,
-      },
+      grid: { display: false },
     },
   },
 };
 
 export default function RevenueChart() {
+  const [chartData, setChartData] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await api.get("/orders/sales/daily");
+        const sales = res.data;
+
+        // Extract dates and totalSales
+        const labels = sales.map((item: any) => item.date); // e.g. ["2025-05-15", ...]
+        const data = sales.map((item: any) => item.totalSales);
+
+        setChartData({
+          labels,
+          datasets: [
+            {
+              label: "Revenue",
+              data,
+              backgroundColor: "rgba(66, 135, 245, 0.7)",
+              borderRadius: 6,
+              barThickness: 20,
+            },
+          ],
+        });
+      } catch (error) {
+        console.error("Error fetching sales data", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
-    <>
-      <Box>
-        <Bar data={data} options={options} />
-      </Box>
-    </>
+    <Box>
+      <Text fw={600} mb="sm" size="lg">Daily Revenue Chart</Text>
+      {chartData ? <Bar data={chartData} options={options} /> : <Text>Loading...</Text>}
+    </Box>
   );
 }

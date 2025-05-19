@@ -112,7 +112,7 @@ export default function Navbar() {
                   <IconHeart color="black" />
                 </ActionIcon>
               )}
-              {user && (
+              {user &&  (
                 <ActionIcon onClick={() => handleClick()} variant="transparent">
                   <IconUser color="black" />
                 </ActionIcon>

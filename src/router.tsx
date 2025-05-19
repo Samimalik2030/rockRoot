@@ -29,6 +29,7 @@ import PaymentSucess from "./pages/PaymentSucess";
 import PaymentCancel from "./pages/PaymentCancel";
 import GeminiText from "./pages/Gemini";
 import Precautions from "./pages/Precautions";
+import PaymentForm from "./pages/PaymentForm";
 
 
 export const router = createBrowserRouter([
@@ -107,6 +108,10 @@ export const router = createBrowserRouter([
   {
     path: "/precautions",
     element: <Precautions/>,
+  },
+  {
+    path: "/payment-form",
+    element: <PaymentForm/>,
   },
   {
     path: "/account",

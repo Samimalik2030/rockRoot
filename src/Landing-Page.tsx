@@ -38,6 +38,9 @@ import handleAddToCart from "./constants/handleAddToCart";
 import { IUser, Role } from "./interfaces/IUser";
 import handleAddToFavorites from "./constants/handleAddToFavourites";
 import GeminiText from "./pages/Gemini";
+import IconBrandFacebook from "./assets/icons/IconBrandFacebbok";
+import Whatsapp from "./assets/icons/IconWhatsapp";
+import Instagram from "./assets/icons/IconInstagram";
 
 const MotionCard = motion(Card);
 
@@ -429,7 +432,7 @@ function LandingPage() {
                   {/* Price & Details */}
                   <Group justify="space-between" mt="md" align="center">
                     <Text fw={600} size="lg">
-                      ${product.price.toFixed(2)}{" "}
+                      Rs.{product.price.toFixed(2)}{" "}
                       <Text component="span" size="sm" color="dimmed">
                         per sq ft
                       </Text>
@@ -585,6 +588,37 @@ function LandingPage() {
           <Footer />
         </Stack>
       </Container>
+      <Stack pos={"fixed"} bottom={0} right={0} p={20} gap={10}>
+        <a
+          href="https://www.facebook.com"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <ActionIcon color="#1877F2" variant="filled" size="lg">
+            <IconBrandFacebook />
+          </ActionIcon>
+        </a>
+
+        <a
+          href="https://www.whatsapp.com"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <ActionIcon color="#25D366" variant="filled" size="lg">
+            <Whatsapp />
+          </ActionIcon>
+        </a>
+
+        <a
+          href="https://www.instagram.com"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <ActionIcon color="#E1306C" variant="filled" size="lg">
+            <Instagram />
+          </ActionIcon>
+        </a>
+      </Stack>
     </>
   );
 }

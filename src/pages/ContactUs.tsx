@@ -194,10 +194,10 @@ function ContactUs() {
                           Our Location
                         </Text>
                         <Text color="dimmed" size="sm">
-                          123 Marble Avenue, Gulberg III
+                         Khad Factory near Farrakh town
                         </Text>
                         <Text color="dimmed" size="sm">
-                          Lahore, Punjab, Pakistan
+                          Multan, Punjab, Pakistan
                         </Text>
                       </div>
                     </Group>
@@ -211,10 +211,13 @@ function ContactUs() {
                           Phone Number
                         </Text>
                         <Text color="dimmed" size="md">
-                          +92 300 123 4567
+                          +92 304 7191923
                         </Text>
                         <Text color="dimmed" size="md">
-                          +92 42 3456 7890
+                          +92 343 3117257
+                        </Text>
+                          <Text color="dimmed" size="md">
+                          +92 300 3767979
                         </Text>
                       </div>
                     </Group>
@@ -228,10 +231,10 @@ function ContactUs() {
                           Email Address
                         </Text>
                         <Text color="dimmed" size="md">
-                          info@rajputmarble.pk
+                         saedmuneeb531@gmail.com
                         </Text>
                         <Text color="dimmed" size="md">
-                          sales@rajputmarble.pk
+                          ranaubaidullah1811@gmail.com
                         </Text>
                       </div>
                     </Group>

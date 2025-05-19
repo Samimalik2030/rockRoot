@@ -20,6 +20,8 @@ import { OrderSummary } from "../interfaces/OrderSummary";
 import { IUser } from "../interfaces/IUser";
 import api from "../api";
 import { getPublicIP } from "../constants/PublicIpAdress";
+import { ICart } from "../interfaces/Cart";
+import { useNavigate } from "react-router-dom";
 // import { modals } from "@mantine/modals";
 
 function CheckOut() {
@@ -28,6 +30,22 @@ function CheckOut() {
   const user: IUser = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user") as string)
     : null;
+
+  const [carts, setCarts] = useState<ICart[]>([]);
+  const navigate = useNavigate();
+  const getCarts = async () => {
+    try {
+      const { data } = await api.get(`carts/${user._id}`);
+      if (data) {
+        setCarts(data);
+      } else {
+        setCarts([]);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const getSummary = async () => {
     try {
       const { data } = await api.get(`carts/summary/${user._id}`); // <-- added slash /
@@ -42,6 +60,7 @@ function CheckOut() {
   };
 
   useEffect(() => {
+    getCarts();
     getSummary();
   }, []);
 
@@ -58,57 +77,24 @@ function CheckOut() {
       nameOnCard: "",
     },
   });
-  const handlePay = async () => {
-    try {
-      const { data } = await api.get(`/payfast/token`);
-      console.log(data, "data");
-      // {
-      //   token: 'u0uauKYwuTkplpzuT3HTWpsWLFOi7m--3U_9eESpu74',
-      //   basket_id: 'ITEM-AZ13',
-      //   txn_amt: '10.00',
-      //   order_date: '2025-05-15 16:35:33'
-      // }
-      if (data?.token) {
-        const formElement = document.createElement("form");
-        formElement.method = "POST";
-        formElement.action =
-          "https://ipguat.apps.net.pk/Ecommerce/api/Transaction/PostTransaction";
 
-        const inputs = {
-          CURRENCY_CODE: "PKR",
-          MERCHANT_ID: "102",
-          MERCHANT_NAME: "Demo Merchant",
-          TOKEN: data.token,
-          BASKET_ID: data.basket_id,
-          TXNAMT: data.txn_amt,
-          ORDER_DATE: data.order_date,
-          SUCCESS_URL: "http://localhost:5173/payment-success",
-          FAILURE_URL: "http://localhost:5173/payment-failure",
-          CUSTOMER_EMAIL_ADDRESS: "customer@example.com",
-          TXNDESC: "Test Transaction",
-          PROCCODE: "00",
-          TRAN_TYPE: "ECOMM_PURCHASE",
-          CUSTOMER_MOBILE_NO: "03001234567",
-        };
-       
-        for (const key in inputs) {
-          const input = document.createElement("input");
-          input.type = "hidden";
-          input.name = key;
-          input.value = inputs[key];
-          formElement.appendChild(input);
-        }
-
-        document.body.appendChild(formElement);
-        formElement.submit();
-      } else {
-        console.error("Token not received");
+  const handleBuy = async () => {
+    const productsName = carts.map((cart, ind) => cart.product.name);
+    {
+      if (summary?.total !== undefined && summary?.total !== null) {
+        localStorage.setItem("totalPrice", summary.total.toString());
       }
-    } catch (error) {
-      console.error("Error during payment", error);
+      const response = await api.post("/orders", {
+        address: { ...form.values },
+        products: productsName,
+        user: user._id,
+        ...summary,
+      });
+      if (response.data) {
+        navigate('/account/orders');
+      }
     }
   };
-
   return (
     <>
       <Navbar />
@@ -123,55 +109,62 @@ function CheckOut() {
         <Grid>
           <Grid.Col span={largeScreen ? 8 : 12}>
             <Card padding="lg" radius="md" bg={"transparent"} withBorder>
-              <form onSubmit={form.onSubmit(handlePay)}>
-                <Stack>
-                  <Title fz={20} fw={700}>
-                    Shipping Address
-                  </Title>
+              {/* <form onSubmit={form.onSubmit(handlePay)}> */}
+              <Stack>
+                <Title fz={20} fw={700}>
+                  Shipping Address
+                </Title>
 
-                  <TextInput
-                    label="Address"
-                    placeholder="Your address"
-                    {...form.getInputProps("address")}
-                  />
+                <TextInput
+                  label="Address"
+                  placeholder="Your address"
+                  {...form.getInputProps("address")}
+                />
 
+                <TextInput
+                  label="Apartment, suite, etc. (optional)"
+                  placeholder=""
+                  {...form.getInputProps("apartment")}
+                />
+
+                <Flex
+                  gap={largeScreen ? 30 : 10}
+                  wrap={largeScreen ? "nowrap" : "wrap"}
+                >
                   <TextInput
-                    label="Apartment, suite, etc. (optional)"
+                    w={largeScreen ? "50%" : "100%"}
+                    label="City"
                     placeholder=""
-                    {...form.getInputProps("apartment")}
+                    {...form.getInputProps("city")}
                   />
+                  <TextInput
+                    w={largeScreen ? "50%" : "100%"}
+                    label="State"
+                    placeholder=""
+                    {...form.getInputProps("state")}
+                  />
+                  <TextInput
+                    w={largeScreen ? "50%" : "100%"}
+                    label="Zip Code"
+                    placeholder=""
+                    {...form.getInputProps("zip")}
+                  />
+                </Flex>
 
-                  <Flex
-                    gap={largeScreen ? 30 : 10}
-                    wrap={largeScreen ? "nowrap" : "wrap"}
-                  >
-                    <TextInput
-                      w={largeScreen ? "50%" : "100%"}
-                      label="City"
-                      placeholder=""
-                      {...form.getInputProps("city")}
-                    />
-                    <TextInput
-                      w={largeScreen ? "50%" : "100%"}
-                      label="State"
-                      placeholder=""
-                      {...form.getInputProps("state")}
-                    />
-                    <TextInput
-                      w={largeScreen ? "50%" : "100%"}
-                      label="Zip Code"
-                      placeholder=""
-                      {...form.getInputProps("zip")}
-                    />
-                  </Flex>
+                <Divider size={1} />
 
-                  <Divider size={1} />
-
-                  <Button type="submit" color="dark" mt="lg">
+                <a
+                  href="http://localhost:5173/payment-form"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => handleBuy()}
+                >
+                  <Button color="dark" mt="lg">
                     Submit & Pay
                   </Button>
-                </Stack>
-              </form>
+                </a>
+              </Stack>
+              {/* </form> */}
             </Card>
           </Grid.Col>
           <Grid.Col span={largeScreen ? 4 : 12}>

@@ -45,27 +45,30 @@ function MyAccount() {
     });
   };
 
+  const isAdmin = user.role === "Admin";
+
   return (
     <>
       <Navbar />
       <Container
         bg={"#f2f4f8ff"}
         w={"100vw"}
-    
         fluid
         px={40}
         py={80}
         style={{ border: "2px solid #e2e8f0" }}
       >
         <Grid>
-          <Grid.Col span={{
-            base:12,
-            xs:12,
-            sm:3,
-            md:3,
-            lg:3,
-            xl:3
-          }}>
+          <Grid.Col
+            span={{
+              base: 12,
+              xs: 12,
+              sm: 3,
+              md: 3,
+              lg: 3,
+              xl: 3,
+            }}
+          >
             <Card
               withBorder
               radius="md"
@@ -95,12 +98,15 @@ function MyAccount() {
                     active={currentPath.includes("/account/orders")}
                     onClick={() => navigate("/account/orders")}
                   />
-                  <NavLink
-                    label="Wishlist"
-                    leftSection={<CheckIcon />}
-                    active={currentPath.includes("/account/wishlist")}
-                    onClick={() => navigate("/account/wishlist")}
-                  />
+
+                  {!isAdmin && (
+                    <NavLink
+                      label="Wishlist"
+                      leftSection={<CheckIcon />}
+                      active={currentPath.includes("/account/wishlist")}
+                      onClick={() => navigate("/account/wishlist")}
+                    />
+                  )}
 
                   <NavLink
                     label="Settings"
@@ -126,14 +132,16 @@ function MyAccount() {
               </Stack>
             </Card>
           </Grid.Col>
-          <Grid.Col span={{
-            base:12,
-            xs:12,
-            sm:9,
-            md:9,
-            lg:9,
-            xl:9
-          }}>
+          <Grid.Col
+            span={{
+              base: 12,
+              xs: 12,
+              sm: 9,
+              md: 9,
+              lg: 9,
+              xl: 9,
+            }}
+          >
             <Outlet />
           </Grid.Col>
         </Grid>

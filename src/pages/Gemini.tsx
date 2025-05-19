@@ -100,6 +100,7 @@ export default function GeminiText() {
           borderRadius: 6,
           marginBottom: 10,
         }}
+        bg={'white'}
       >
         {messages.length === 0 && (
           <Text color="dimmed" ta="center" mt={20}>
@@ -113,7 +114,9 @@ export default function GeminiText() {
               margin: "10px 0",
               display: "flex",
               justifyContent: msg.sender === "user" ? "flex-end" : "flex-start",
+             
             }}
+
           >
             <Box
               style={{

@@ -160,7 +160,7 @@ export const ProductCard = ({
       {/* Price & Details */}
       <Group justify="space-between" mt="md" align="center">
         <Text fw={600} size="lg">
-          ${price.toFixed(2)}{" "}
+          Rs.{price.toFixed(2)}{" "}
           <Text component="span" size="sm" color="dimmed">
             per sq ft
           </Text>

@@ -154,7 +154,7 @@ export default function Wishlist(){
                               {/* Price & Details */}
                               <Group justify="space-between" mt="md" align="center">
                                 <Text fw={600} size="lg">
-                                  ${wishlist?.product?.price.toFixed(2)}{" "}
+                                  Rs.{wishlist?.product?.price.toFixed(2)}{" "}
                                   <Text component="span" size="sm" color="dimmed">
                                     per sq ft
                                   </Text>

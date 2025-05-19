@@ -33,7 +33,7 @@ const ForgotPassword = () => {
   const form = useForm({
     initialValues: {
       email: "",
-      type:"Forgot Password"
+      type: "Forgot Password",
     },
     validate: yupResolver(validateSchema),
   });
@@ -74,8 +74,6 @@ const ForgotPassword = () => {
               }}
               src={
                 "https://images.unsplash.com/photo-1659354116227-bbfde3fbd73f?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fG1hcmJsZSUyMHJvb21zfGVufDB8MXwwfHx8MA%3D%3D"
-               
-
               }
             />
           </Card>
